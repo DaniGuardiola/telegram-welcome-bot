@@ -1,0 +1,19 @@
+{
+  "name": "telegram-welcome-bot",
+  "version": "1.0.0",
+  "description": "Simple Telegram bot that sends a welcome message to new members of a group",
+  "main": "main.js",
+  "dependencies": {
+    "command-line-args": "^5.0.2",
+    "node-persist": "^3.0.1",
+    "node-telegram-bot-api": "^0.30.0"
+  },
+  "author": "Dani Guardiola",
+  "license": "MIT",
+  "devDependencies": {
+    "standard": "^11.0.1"
+  },
+  "scripts": {
+    "start": "node main"
+  }
+}
