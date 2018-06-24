@@ -105,6 +105,8 @@ const sendMessage = (chatId, msg) => bot.sendMessage(chatId, msg, { parse_mode: 
 
 const sendErrorMessage = (chatId, msg) => sendMessage(chatId, composeErrorMessage(msg))
 
+const isGroup = msg => ['group', 'supergroup'].indexOf(msg.chat.type) > -1
+
 // ----------------
 // data
 
@@ -175,7 +177,7 @@ const memberLeftHandler = async msg => {
 }
 
 const changeWelcomeMessageHandler = async (msg, match) => {
-  if (msg.chat.type !== 'group') return notGroupHandler(msg)
+  if (!isGroup(msg)) return notGroupHandler(msg)
 
   const chatId = msg.chat.id
   const groupName = msg.chat.title
@@ -196,28 +198,24 @@ const changeWelcomeMessageHandler = async (msg, match) => {
 }
 
 const changeWelcomeMessageEmptyHandler = msg => {
-  if (msg.chat.type !== 'group') return notGroupHandler(msg)
+  if (!isGroup(msg)) return notGroupHandler(msg)
 
   return sendErrorMessage(msg.chat.id, `You can't set an empty message!`)
 }
 
 const helpHandler = msg => {
-  const isGroup = msg.chat.type === 'group'
-
   // don't send the message if only the /help command is used
   // on a group without the bot's mention appended
   const mentionRegExp = new RegExp(`\\/help@${BOT_USERNAME}`)
   const withMention = !!msg.text.match(mentionRegExp)
-  if (isGroup && !withMention) return
+  if (isGroup(msg) && !withMention) return
 
   return sendMessage(msg.chat.id, HELP_MSG)
 }
 
 const startHandler = msg => {
-  const isGroup = msg.chat.type === 'group'
-
   // don't send the message on a group
-  if (isGroup) return
+  if (isGroup(msg)) return
 
   return sendMessage(msg.chat.id, START_MSG)
 }
