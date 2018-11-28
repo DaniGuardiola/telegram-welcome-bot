@@ -44,8 +44,3 @@ $ npm run start -- -p ~/bot -t 582659278:JsjjSHDNns-JjshJhann2nhJjans88kKSiw -u 
 ```
 
 Enjoy!
-
-# Known issues
-
-- Markdown parsing [can fail](https://github.com/python-telegram-bot/python-telegram-bot/issues/131#issuecomment-167003086), for example by using an odd number of "*" or "_" characters in the group name
-- If a user doesn't have a telegram @username and it is used on the template, the message will display "@undefined"

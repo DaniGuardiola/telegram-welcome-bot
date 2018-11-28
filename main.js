@@ -5,6 +5,17 @@
 const storage = require('node-persist')
 const TelegramBot = require('node-telegram-bot-api')
 const commandLineArgs = require('command-line-args')
+const markdownEscape = require('markdown-escape')
+const marked = require('marked')
+
+// ----------------
+// marked renderer options for telegram HTML
+
+const markedRenderer = new marked.Renderer()
+
+markedRenderer.paragraph = (text) => `\n\n${text}`
+markedRenderer.list = (text) => `\n${text}`
+markedRenderer.listitem = (text) => `\n- ${text}`
 
 // ----------------
 // command line arguments
@@ -35,7 +46,7 @@ const BOT_ID = +API_TOKEN.split(':')[0]
 // built-in messages
 const ERROR_MESSAGE_PREFIX = '⚠️ *Beep, boop, error!*'
 
-const DEFAULT_MSG_TEMPLATE = '👋 Welcome to $groupname $firstname ($username)! 😀'
+const DEFAULT_MSG_TEMPLATE = '👋 Welcome to $groupname $firstname ($safeusername)! 😀'
 
 const START_MSG = 'Add me to a group! :)'
 
@@ -48,8 +59,11 @@ To customize the message, use the command \`/change_welcome_message <your new me
 You can use the following templates:
 
 - \`$$username\`: the new member's username (example: $username)
+- \`$$safeusername\`: the username, but if it isn't defined by the user, the first name will be used instead (example: $safeusername)
 - \`$$firstname\`: the new member's first name (example: $firstname)
 - \`$$groupname\`: the group's name (example: $groupname)
+
+IMPORTANT: \`$username\` could fail if the user hasn't defined a username, and when that happens the resulting string will be \`@undefined\`. Because of this, it is recommended to use \`$safeusername\` instead.
 
 Keep in mind that *only* the user who introduced me to this group ($username) can execute this command.
 
@@ -69,8 +83,11 @@ To customize the message, use the command \`/change_welcome_message <your new me
 You can use the following templates:
 
 - \`$username\`: the new member's username (with the @ character)
+- \`$safeusername\`: the username, but if it isn't defined by the user, the first name will be used instead
 - \`$firstname\`: the new member's first name
 - \`$groupname\`: the group's name
+
+IMPORTANT: \`$username\` could fail if the user hasn't defined a username, and when that happens the resulting string will be \`@undefined\`. Because of this, it is recommended to use \`$safeusername\` instead.
 
 Keep in mind that *only* the user who introduces me to a group can execute this command.
 
@@ -88,11 +105,14 @@ const bot = new TelegramBot(API_TOKEN, { polling: true })
 // message composers
 
 const composeMessage = (msg, member, groupname) => msg
-  .replace(/([^$])(\$username)/g, (full, pre) => `${pre}@${member.username}`)
-  .replace(/([^$])(\$firstname)/g, (full, pre) => `${pre}${member.first_name}`)
-  .replace(/([^$])(\$groupname)/g, (full, pre) => `${pre}${groupname}`)
+  .replace(/([^$])(\$username)/g, (full, pre) => `${pre}@${markdownEscape(member.username)}`)
+  .replace(/([^$])(\$firstname)/g, (full, pre) => `${pre}${markdownEscape(member.first_name)}`)
+  .replace(/([^$])(\$groupname)/g, (full, pre) => `${pre}${markdownEscape(groupname)}`)
+  .replace(/([^$])(\$safeusername)/g, (full, pre) => member.username
+    ? `${pre}@${markdownEscape(member.username)}`
+    : `${pre}@${markdownEscape(member.first_name)}`)
   // remove extra "$" in $$username / $$firstname / $$groupname
-  .replace(/\$\$(username|firstname|groupname)/g, (full, match) => `$${match}`)
+  .replace(/\$\$(username|safeusername|firstname|groupname)/g, (full, match) => `$${markdownEscape(match)}`)
 
 const composeIntroMessage = (owner, groupName) => composeMessage(INTRO_MSG, owner, groupName)
 
@@ -101,7 +121,7 @@ const composeErrorMessage = msg => `${ERROR_MESSAGE_PREFIX} ${msg}`
 // ----------------
 // helpers
 
-const sendMessage = (chatId, msg) => bot.sendMessage(chatId, msg, { parse_mode: 'Markdown' })
+const sendMessage = (chatId, msg) => bot.sendMessage(chatId, marked(msg, { renderer: markedRenderer }), { parse_mode: 'HTML' })
 
 const sendErrorMessage = (chatId, msg) => sendMessage(chatId, composeErrorMessage(msg))
 
