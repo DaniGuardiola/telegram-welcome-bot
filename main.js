@@ -15,7 +15,7 @@ const markedRenderer = new marked.Renderer()
 
 markedRenderer.paragraph = (text) => `\n\n${text}`
 markedRenderer.list = (text) => `\n${text}`
-markedRenderer.listitem = (text) => `\n- ${text}`
+markedRenderer.listitem = (text) => `n- ${text}`
 
 // ----------------
 // command line arguments
