@@ -6,14 +6,14 @@ Simple Telegram bot that sends a welcome message to new members.
 
 > Note: not actively maintained, but will accept PRs and review small bugs.
 
-# Features
+## Features
 
 - Welcomes new members to a group.
 - Welcome message can be changed with the `/change_welcome_message` command.
 - Filesystem persistence for restart resilience.
 - Dead-easy deployment and setup.
 
-# Installation
+## Installation
 
 > You need NodeJS v8+ installed on your server to deploy and run this bot.
 
@@ -28,7 +28,7 @@ Simple Telegram bot that sends a welcome message to new members.
 > - `--api-token`: `-t`
 > - `--bot-username`: `-u`
 
-## Command list
+### Command list
 
 For autocompletion and command list within the Telegram apps, you might want to configure the command list through BotFather.
 
@@ -39,7 +39,7 @@ change_welcome_message - Changes the welcome message of the group
 help - Displays a help message
 ```
 
-# Example
+### Deployment example
 
 ```
 $ npm run start -- -p ~/bot -t 582659278:JsjjSHDNns-JjshJhann2nhJjans88kKSiw -u welcome_message_bot
