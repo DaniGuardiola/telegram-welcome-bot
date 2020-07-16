@@ -6,7 +6,7 @@
   "dependencies": {
     "command-line-args": "^5.0.2",
     "markdown-escape": "^1.0.2",
-    "marked": "^0.5.2",
+    "marked": "^0.6.1",
     "mdv": "^1.1.0",
     "node-persist": "^3.0.1",
     "node-telegram-bot-api": "^0.30.0"
